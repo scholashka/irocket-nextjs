@@ -1,6 +1,6 @@
-import RtpIndicatorComponent from '@/components/RtpIndicatorComponents';
+import RtpIndicatorComponent from '@/components/RtpIndicatorComponent';
 
-export default async function Home() {
+export default function Home() {
   const scenarios = [
     {
       title: 'Cold',
