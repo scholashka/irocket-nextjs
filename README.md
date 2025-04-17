@@ -11,7 +11,7 @@ This project is a responsive and animated RTP Indicator built with **Next.js**, 
 -   🎨 **Gradient and Glow Effects** styled from Figma designs
 -   🃏 **Flip Card Design on Mobile**
 -   📱 **Responsive Design** (Mobile & Desktop)
--   💻 Built with **Next.js 14**, **TypeScript**, and **Tailwind CSS**
+-   💻 Built with **Next.js**, **TypeScript**, and **Tailwind CSS**
 
 ---
 
