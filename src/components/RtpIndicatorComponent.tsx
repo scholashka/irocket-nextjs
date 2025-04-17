@@ -1,6 +1,9 @@
+'use client'
 import Image from 'next/image';
 import React from 'react';
 import CircularProgress from './CircularProgress';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 type Props = {
     casinoName: string;
@@ -31,7 +34,7 @@ export default function RtpIndicatorComponent({
 }: Props) {
     const diff = rtp - srp;
     const isCold = diff < 0;
-
+    const [isFlipped, setIsFlipped] = useState(false);
     const renderProgressBar = () => {
         return <div className="relative flex justify-center items-center mt-6 md:pt-0 md:mt-4 w-[140px] h-[120px] md:w-[200px] md:h-[160px] ">
             <CircularProgress percentage={Math.abs(diff * 10)} isCold={isCold} />
@@ -49,8 +52,8 @@ export default function RtpIndicatorComponent({
         </>
     }
 
-    const renderStats = () => {
-        return <div className="hidden md:block bg-[#0B1B32] p-[20px] rounded-2xl text-sm space-y-2">
+    const renderStats = (hiddenOnMobile: boolean) => {
+        return <div className={`${hiddenOnMobile ? 'hidden' : ''} md:block bg-[#0B1B32] md:p-[20px] rounded-2xl text-sm space-y-2`}>
             <div className="flex justify-between">
                 <span className="flex items-center gap-1">
                     SRP <span className="text-xs text-gray-400 cursor-help">ⓘ</span>
@@ -64,7 +67,7 @@ export default function RtpIndicatorComponent({
             <div className="flex justify-between">
                 <span>Difference</span>
                 <span className="flex items-center gap-1">
-                    {isCold && '🧊🧊🧊🧊'}
+                    {isCold && hiddenOnMobile && '🧊🧊🧊🧊'}
                     {diff.toFixed(2)}%
                 </span>
             </div>
@@ -105,24 +108,40 @@ export default function RtpIndicatorComponent({
     }
 
     return <>
-        <div className="bg-[#0B1B32] md:bg-[#021024] rounded-3xl md:p-5 w-[180px] md:w-[398px] h-[260px] md:h-[568px] text-white font-semibold shadow-xl space-y-4">
-            {renderTopBar()}
-            <div className='bg-[#021024] rounded-3xl m-0 pb-2 flex flex-col items-center'>
-                {renderProgressBar()}
-                {renderRTP()}
-            </div>
-            {renderStats()}
-            {renderButton()}
-
-            <div className='flex md:hidden justify-between items-center p-2 pl-4 pr-4'>
-                <div>
-                    <p className='text-white text-sm'>{gameName}</p>
-                    <span className='text-xs text-[#607E9D]'>by {providerName}</span>
+        <div className="md:w-[398px] w-[180px] h-[260px] md:h-[568px] perspective mx-auto">
+            <motion.div
+                className="w-full h-full relative"
+                animate={{ rotateY: isFlipped ? 180 : 0 }}
+                transition={{ duration: 0.6 }}
+                style={{ transformStyle: 'preserve-3d' }}
+            >
+                <div className="absolute w-full h-full backface-hidden bg-[#0B1B32] md:bg-[#021024] rounded-3xl md:p-5 text-white font-semibold shadow-xl space-y-4">
+                    {renderTopBar()}
+                    <div className='bg-[#021024] rounded-3xl m-0 pb-2 flex flex-col items-center'>
+                        {renderProgressBar()}
+                        {renderRTP()}
+                    </div>
+                    {renderStats(true)}
+                    {renderButton()}
+                    {/* Mobile Front Card */}
+                    <div className="flex md:hidden justify-between items-center p-2 pl-4 pr-4">
+                        <div>
+                            <p className='text-white text-sm'>{gameName}</p>
+                            <span className='text-xs text-[#607E9D]'>by {providerName}</span>
+                        </div>
+                        <div className='bg-[#021024] rounded-full p-1' onClick={() => setIsFlipped(true)}>
+                            <span className='flex items-center justify-center text-cyan-400 w-[20px] h-[20px] cursor-pointer'>ⓘ</span>
+                        </div>
+                    </div>
                 </div>
-                <div className='bg-[#021024] rounded-full p-1'>
-                    <span className='flex items-center justify-center text-cyan-400 w-[20px] h-[20px] cursor-pointer'>ⓘ</span>
+                {/* Mobile Back Card */}
+                <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-[#0B1B32] rounded-3xl p-4 flex flex-col justify-between items-center text-center text-white text-sm">
+                    <div className="w-full flex justify-end">
+                        <button onClick={() => setIsFlipped(false)} className="text-cyan-400 text-lg cursor-pointer">x</button>
+                    </div>
+                    {renderStats(false)}
                 </div>
-            </div>
+            </motion.div>
         </div>
     </>
 }
